@@ -6,9 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Ambil Kode Repositori
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Siapkan Environment Linux & Theos
+    - name: Siapkan Environment Linux & Alat Perakit
       run: |
         sudo apt-get update
         sudo apt-get install -y fakeroot perl make git
@@ -24,7 +24,7 @@ jobs:
         make package THEOS_PACKAGE_SCHEME=rootless
         
     - name: Unggah Hasil Dylib Jadi File Download
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Hasil-Tweak-ZaynixMenu
         path: .theos/obj/debug/*.dylib
