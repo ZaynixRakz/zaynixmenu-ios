@@ -5,27 +5,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Ambil Kode Repositori
+    - name: Langkah 1 - Ambil Proyek Kamu
       uses: actions/checkout@v4
 
-    - name: Siapkan Environment Linux & Alat Perakit
+    - name: Langkah 2 - Pasang Komponen Linux Wajib
       run: |
         sudo apt-get update
-        sudo apt-get install -y fakeroot perl make git
-        git clone --recursive https://github.com $HOME/theos
-        curl -LO https://github.com
-        mkdir -p $HOME/theos/sdks
-        tar -xf iPhoneOS14.5.sdk.tar.xz -C $HOME/theos/sdks/
-        
-    - name: Proses Mengubah Kode Jadi Dylib
+        sudo apt-get install -y fakeroot perl make git clang
+
+    - name: Langkah 3 - Unduh Alat Perakit Instan
       run: |
-        export THEOS=$HOME/theos
+        git clone --recursive https://github.com ${{ github.workspace }}/theos
+
+    - name: Langkah 4 - Ambil SDK iOS Resmi
+      run: |
+        curl -ksLO https://githubusercontent.com
+        mkdir -p ${{ github.workspace }}/theos/sdks
+        tar -xf iPhoneOS14.5.sdk.tar.xz -C ${{ github.workspace }}/theos/sdks/
+
+    - name: Langkah 5 - Proses Mengubah Kode Jadi Dylib
+      run: |
+        export THEOS=${{ github.workspace }}/theos
         export PATH=$THEOS/bin:$PATH
         make package THEOS_PACKAGE_SCHEME=rootless
         
-    - name: Unggah Hasil Dylib Jadi File Download
+    - name: Langkah 6 - Kirim File Hasil Jadi ke Download
       uses: actions/upload-artifact@v4
       with:
         name: Hasil-Tweak-ZaynixMenu
-        path: .theos/obj/debug/*.dylib
-        
+        path: |
+          .theos/obj/debug/*.dylib
+          .theos/obj/*.dylib
+          obj/*.dylib
+          
