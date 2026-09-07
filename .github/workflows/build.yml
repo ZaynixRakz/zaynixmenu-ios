@@ -1,0 +1,31 @@
+name: Build Tweak iOS
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Ambil Kode Repositori
+      uses: actions/checkout@v3
+
+    - name: Siapkan Environment Linux & Theos
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y fakeroot perl make git
+        git clone --recursive https://github.com $HOME/theos
+        curl -LO https://github.com
+        mkdir -p $HOME/theos/sdks
+        tar -xf iPhoneOS14.5.sdk.tar.xz -C $HOME/theos/sdks/
+        
+    - name: Proses Mengubah Kode Jadi Dylib
+      run: |
+        export THEOS=$HOME/theos
+        export PATH=$THEOS/bin:$PATH
+        make package THEOS_PACKAGE_SCHEME=rootless
+        
+    - name: Unggah Hasil Dylib Jadi File Download
+      uses: actions/upload-artifact@v3
+      with:
+        name: Hasil-Tweak-ZaynixMenu
+        path: .theos/obj/debug/*.dylib
+        
