@@ -1,13 +1,13 @@
 #include <substrate.h>
-#include <mach-o/dyld.h>
 
+// Fungsi dasar mematikan recoil senjata
 void (*old_Recoil)(void *instance);
 void new_Recoil(void *instance) {
     return; 
 }
 
-%ctor {
-    %init;
-    MSHookFunction((void *)(_dyld_get_image_header(0) + 0x1023456), (void *)new_Recoil, (void **)&old_Recoil);
+// Injeksi otomatis saat game dibuka
+__attribute__((constructor)) static void init() {
+    // Fitur langsung disuntik ke biner game
+    MSHookFunction((void *)0x1023456, (void *)new_Recoil, (void **)&old_Recoil);
 }
-
